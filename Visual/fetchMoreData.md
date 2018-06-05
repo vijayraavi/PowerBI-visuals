@@ -64,8 +64,13 @@ public update(options: VisualUpdateOptions) {
 
 	// complete update implementation
 	…
+}
+```
 
-	// fetchMoreData requests could also be invoked from a UI event handler
+fetchMoreData requests could also be invoked from a UI event handler
+```typescript
+btn_click(){
+{
 	// check if more data is expected for the current dataview
 	if (dataView.metadata.segment) {
 		//request for more data if available
