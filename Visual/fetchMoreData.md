@@ -1,9 +1,9 @@
 # Pulling data in segments - fetchMoreData
 
-## Enable segmented fetch of long data sets
+## Enable segmented fetch of large datasets
 
-For dataview segment mode, define "window" dataReductionAlgorithm on capabilities.json, for the required dataViewMapping.
-The "count" will set the window size, that limits the amount of new data rows aggreated to the dataview on each update.
+For dataview segment mode, define a "window" dataReductionAlgorithm in the visual's capabilities.json for the required dataViewMapping.
+The "count" will determine the window size which limits the amount of new data rows appended to the dataview in each update. 
 
 ```json
   "dataViewMappings": [
@@ -24,19 +24,40 @@ The "count" will set the window size, that limits the amount of new data rows ag
     ]
 ```
 
-## Usage on custom visual
+New segments are appended to the existing dataview and provided to the visual as an 'update' call.
 
+## Usage in the custom visual
+
+The indication of whether or not more data exists is by checking the existance of: 
+		```
+		dataView.metadata.segment
+		```
+
+It is also possible to check whether this is the first or subsequent update by checking:
+	```
+	options.operationKind
+	```.
+	```
+	VisualDataChangeOperationKind.Create
+	```
+means the first segment, and 
+	```
+	VisualDataChangeOperationKind.Append
+	```
+means subsequent segments.
+
+See the code snippet below for a sample implementation:
 ```typescript
 // CV update implementation
 public update(options: VisualUpdateOptions) {
 	…
 
-	// special handling of the 1st segment of new data.
+	// indicates this is the first segment of new data.
 	if (options.operationKind == VisualDataChangeOperationKind.Create) {
 	   …   
 	} 
 
-	// on 2nd and later segments:
+	// on second or subesquent segments:
 	if (options.operationKind == VisualDataChangeOperationKind.Append) {
 	   …
 	}
@@ -44,7 +65,7 @@ public update(options: VisualUpdateOptions) {
 	// complete update implementation
 	…
 
-	// fetchMoreData request could also be invoked from UI event handler
+	// fetchMoreData requests could also be invoked from a UI event handler
 	// check if more data is expected for the current dataview
 	if (dataView.metadata.segment) {
 		//request for more data if available
