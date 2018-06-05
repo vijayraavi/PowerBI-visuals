@@ -28,7 +28,7 @@ New segments are appended to the existing dataview and provided to the visual as
 
 ## Usage in the custom visual
 
-The indication of whether or not more data exists is by checking the existance of: 
+The indication of whether or not more data exists is by checking the existence of: 
 		```
 		dataView.metadata.segment
 		```
